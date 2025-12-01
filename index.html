@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Staff Dashboard - Pizza Delivery</title>
@@ -13,7 +13,7 @@
       body { font-family: "Poppins", sans-serif; }
       [x-cloak] { display: none !important; }
       
-      /* Animasi Loading */
+      /* Animasi Loading Spinner */
       .loader {
         border: 3px solid #f3f3f3;
         border-top: 3px solid #EA5A3C;
@@ -23,6 +23,10 @@
         animation: spin 1s linear infinite;
       }
       @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+      
+      /* Sembunyikan Scrollbar tapi tetap bisa scroll */
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
     
     <script>
@@ -30,26 +34,26 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#EA5A3C', // Warna Orange Mobile App
-                        secondary: '#EFBF63', // Warna Kuning Mobile App
+                        primary: '#EA5A3C', // Orange Khas Pizza
+                        secondary: '#EFBF63', // Kuning
                     }
                 }
             }
         }
     </script>
-  </head>
+</head>
   
-  <body class="bg-gray-50 text-gray-800" x-data="pizzaApp()" x-init="initData()" x-cloak>
+<body class="bg-gray-50 text-gray-800" x-data="pizzaApp()" x-init="initData()" x-cloak>
 
-    <div x-show="!staff.loggedIn" class="fixed inset-0 z-50 flex items-center justify-center bg-primary/95 p-4 transition-all">
-      <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-sm text-center">
-        <div class="mb-4 inline-block p-4 bg-secondary/20 rounded-full">
+    <div x-show="!staff.loggedIn" class="fixed inset-0 z-50 flex items-center justify-center bg-primary/95 p-4 transition-all duration-500">
+      <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-sm text-center transform transition-all">
+        <div class="mb-4 inline-block p-4 bg-orange-50 rounded-full">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
         </div>
-        <h2 class="text-2xl font-bold text-gray-800 mb-1">Staff Access</h2>
-        <p class="text-gray-400 text-xs mb-6">Login menggunakan Username Outlet</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-1">Staff Portal</h2>
+        <p class="text-gray-400 text-xs mb-6">Login untuk mengelola pesanan outlet</p>
 
         <form @submit.prevent="login()" class="space-y-4 text-left">
           <div>
@@ -61,38 +65,45 @@
             <input type="password" x-model="inputPassword" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition" placeholder="••••••">
           </div>
 
-          <p x-show="loginError" class="text-red-500 text-xs text-center font-medium bg-red-50 p-2 rounded-lg" x-text="errorMessage"></p>
+          <div x-show="loginError" class="bg-red-50 text-red-500 p-3 rounded-xl text-xs font-medium text-center border border-red-100 flex items-center justify-center gap-2">
+             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+             <span x-text="errorMessage"></span>
+          </div>
 
-          <button type="submit" class="w-full bg-primary hover:bg-orange-700 text-white font-bold py-3 rounded-xl shadow-lg hover:shadow-xl transition transform active:scale-95 flex justify-center items-center gap-2">
-            <span x-show="!isLoading">MASUK</span>
-            <div x-show="isLoading" class="loader"></div>
+          <button type="submit" class="w-full bg-primary hover:bg-orange-700 text-white font-bold py-3.5 rounded-xl shadow-lg hover:shadow-xl transition transform active:scale-95 flex justify-center items-center gap-2">
+            <span x-show="!isLoading">MASUK SISTEM</span>
+            <div x-show="isLoading" class="loader border-white border-t-transparent"></div>
           </button>
         </form>
+        
+        <p class="mt-6 text-[10px] text-gray-400">Pastikan Backend Railway sudah aktif.</p>
       </div>
     </div>
 
     <div x-show="staff.loggedIn" class="min-h-screen flex flex-col">
       
-      <header class="bg-white shadow-sm sticky top-0 z-40">
+      <header class="bg-white shadow-sm sticky top-0 z-40 border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <div class="bg-primary text-white h-10 w-10 rounded-xl flex items-center justify-center font-bold shadow-md">PD</div>
+            <div class="bg-primary text-white h-10 w-10 rounded-xl flex items-center justify-center font-bold shadow-md shadow-orange-200 text-sm">PD</div>
             <div>
                 <h1 class="font-bold text-gray-800 leading-tight text-sm md:text-base">Pizza Delivery</h1>
-                <div class="flex items-center gap-2 text-xs text-gray-500">
-                    <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                <div class="flex items-center gap-1.5 text-xs text-gray-500">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    <span x-text="staff.outlet || 'Online'"></span>
+                    <span class="text-gray-300">|</span>
                     <span x-text="staff.name"></span>
                 </div>
             </div>
           </div>
 
-          <div class="flex items-center gap-3">
-            <button @click="fetchOrders()" class="p-2 text-gray-400 hover:text-primary transition" title="Refresh Data">
+          <div class="flex items-center gap-2">
+            <button @click="fetchOrders()" class="p-2 text-gray-400 hover:text-primary hover:bg-orange-50 rounded-lg transition" title="Refresh Data">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" :class="{'animate-spin': isLoading}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
             </button>
-            <button @click="logout()" class="text-xs font-bold text-red-500 hover:bg-red-50 px-3 py-2 rounded-lg transition">
+            <button @click="logout()" class="text-xs font-bold text-red-500 bg-red-50 hover:bg-red-100 px-4 py-2.5 rounded-xl transition">
               Keluar
             </button>
           </div>
@@ -102,52 +113,64 @@
       <main class="flex-grow p-4 md:p-6 max-w-7xl mx-auto w-full">
         
         <div class="flex gap-2 mb-6 overflow-x-auto pb-2 no-scrollbar">
-            <button @click="setOrderFilter('all')" :class="currentOrderFilter === 'all' ? 'bg-gray-800 text-white shadow-lg' : 'bg-white text-gray-500 hover:bg-gray-50'" class="px-5 py-2 rounded-full text-sm font-bold transition whitespace-nowrap">
+            <button @click="setOrderFilter('all')" :class="currentOrderFilter === 'all' ? 'bg-gray-800 text-white shadow-lg' : 'bg-white text-gray-500 hover:bg-gray-50 border border-gray-200'" class="px-5 py-2 rounded-full text-sm font-bold transition whitespace-nowrap">
                 Semua
             </button>
-            <button @click="setOrderFilter('PENDING')" :class="currentOrderFilter === 'PENDING' ? 'bg-primary text-white shadow-lg shadow-orange-200' : 'bg-white text-gray-500 hover:bg-gray-50'" class="px-5 py-2 rounded-full text-sm font-bold transition whitespace-nowrap">
-                Baru Masuk
+            <button @click="setOrderFilter('PENDING')" :class="currentOrderFilter === 'PENDING' ? 'bg-primary text-white shadow-lg shadow-orange-200' : 'bg-white text-gray-500 hover:bg-gray-50 border border-gray-200'" class="px-5 py-2 rounded-full text-sm font-bold transition whitespace-nowrap flex items-center gap-2">
+                <span class="w-2 h-2 bg-orange-300 rounded-full" x-show="currentOrderFilter !== 'PENDING'"></span> Baru Masuk
             </button>
-            <button @click="setOrderFilter('DIPROSES')" :class="currentOrderFilter === 'DIPROSES' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-white text-gray-500 hover:bg-gray-50'" class="px-5 py-2 rounded-full text-sm font-bold transition whitespace-nowrap">
-                Sedang Dimasak
+            <button @click="setOrderFilter('DIPROSES')" :class="currentOrderFilter === 'DIPROSES' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-white text-gray-500 hover:bg-gray-50 border border-gray-200'" class="px-5 py-2 rounded-full text-sm font-bold transition whitespace-nowrap flex items-center gap-2">
+                <span class="w-2 h-2 bg-blue-300 rounded-full" x-show="currentOrderFilter !== 'DIPROSES'"></span> Sedang Dimasak
             </button>
-            <button @click="setOrderFilter('SIAP_DIANTAR')" :class="currentOrderFilter === 'SIAP_DIANTAR' ? 'bg-green-600 text-white shadow-lg shadow-green-200' : 'bg-white text-gray-500 hover:bg-gray-50'" class="px-5 py-2 rounded-full text-sm font-bold transition whitespace-nowrap">
-                Siap Diantar
+            <button @click="setOrderFilter('SIAP_DIANTAR')" :class="currentOrderFilter === 'SIAP_DIANTAR' ? 'bg-green-600 text-white shadow-lg shadow-green-200' : 'bg-white text-gray-500 hover:bg-gray-50 border border-gray-200'" class="px-5 py-2 rounded-full text-sm font-bold transition whitespace-nowrap flex items-center gap-2">
+                <span class="w-2 h-2 bg-green-300 rounded-full" x-show="currentOrderFilter !== 'SIAP_DIANTAR'"></span> Siap Diantar
             </button>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <template x-for="order in filteredActiveOrders" :key="order.id">
-                <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition group">
-                    <div class="flex justify-between items-start mb-3">
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition group relative overflow-hidden">
+                    
+                    <div class="absolute left-0 top-0 bottom-0 w-1.5" :class="getBorderColor(order.status)"></div>
+
+                    <div class="flex justify-between items-start mb-4 pl-2">
                         <div>
                             <div class="flex items-center gap-2 mb-1">
-                                <span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs font-mono font-bold" x-text="'#' + order.id"></span>
+                                <span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-[10px] font-mono font-bold" x-text="'#' + order.id"></span>
                                 <span class="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide" :class="getBadgeClass(order.status)" x-text="getStatusLabel(order.status)"></span>
                             </div>
-                            <h3 class="font-bold text-gray-800" x-text="order.customer"></h3>
+                            <h3 class="font-bold text-gray-800 text-lg" x-text="order.customer"></h3>
+                            <p class="text-xs text-gray-400 mt-0.5 flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span x-text="formatTime(order.date)"></span>
+                            </p>
                         </div>
                         <div class="text-right">
-                            <div class="text-primary font-bold" x-text="formatRupiah(order.total)"></div>
-                            <div class="text-xs text-gray-400" x-text="order.paymentType"></div>
+                            <div class="text-primary font-bold text-lg" x-text="formatRupiah(order.total)"></div>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded uppercase border" 
+                                  :class="order.paymentType === 'COD' ? 'bg-pink-50 text-pink-600 border-pink-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100'"
+                                  x-text="order.paymentType"></span>
                         </div>
                     </div>
 
-                    <div class="bg-gray-50 rounded-xl p-3 mb-4 space-y-3">
+                    <div class="bg-gray-50 rounded-xl p-3 mb-4 space-y-3 pl-4">
                         <template x-if="order.items && order.items.length > 0">
                             <template x-for="item in order.items" :key="item.id">
-                                <div class="flex gap-3">
-                                    <img :src="item.image_url || getPizzaImage(item.menu_name)" class="w-12 h-12 rounded-lg object-cover bg-gray-200">
-                                    <div class="flex-1">
+                                <div class="flex gap-3 items-start">
+                                    <img :src="item.image_url || getPizzaImage(item.menu_name)" class="w-10 h-10 rounded-lg object-cover bg-gray-200 flex-shrink-0">
+                                    
+                                    <div class="flex-1 min-w-0">
                                         <div class="flex justify-between text-sm">
-                                            <span class="font-bold text-gray-700" x-text="item.menu_name"></span>
-                                            <span class="text-gray-500" x-text="'x' + item.quantity"></span>
+                                            <span class="font-bold text-gray-700 truncate pr-2" x-text="item.menu_name"></span>
+                                            <span class="text-gray-500 font-mono text-xs whitespace-nowrap" x-text="'x' + item.quantity"></span>
                                         </div>
-                                        <div class="text-xs text-gray-500 mt-0.5">
-                                            <span x-text="item.size"></span> • <span x-text="item.crust_type"></span>
+                                        <div class="text-[11px] text-gray-500 mt-0.5 flex flex-wrap gap-1">
+                                            <span class="bg-white border border-gray-200 px-1.5 rounded" x-text="item.size"></span>
+                                            <span class="bg-white border border-gray-200 px-1.5 rounded" x-text="item.crust_type"></span>
                                         </div>
-                                        <div x-show="item.special_notes" class="text-[10px] text-orange-600 bg-orange-50 inline-block px-1.5 py-0.5 rounded mt-1 border border-orange-100">
-                                            Catatan: <span x-text="item.special_notes"></span>
+                                        <div x-show="item.special_notes" class="mt-1 flex items-start gap-1">
+                                            <svg class="w-3 h-3 text-orange-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                            <span class="text-[10px] text-orange-600 font-medium italic leading-tight" x-text="item.special_notes"></span>
                                         </div>
                                     </div>
                                 </div>
@@ -156,14 +179,14 @@
 
                         <template x-if="!order.items || order.items.length === 0">
                             <div class="text-center py-2 text-xs text-gray-400 italic">
-                                Detail item belum dimuat dari server
+                                Detail item belum dimuat dari server...
                             </div>
                         </template>
                     </div>
 
-                    <div class="flex gap-2 pt-2 border-t border-gray-50">
+                    <div class="flex gap-3 pl-2">
                         <button @click="updateStatusApi(order, getNextStatus(order.status))" 
-                                class="flex-1 py-2.5 rounded-xl font-bold text-sm text-white shadow-md transition transform active:scale-95 flex justify-center items-center gap-2"
+                                class="flex-1 py-3 rounded-xl font-bold text-sm text-white shadow-md transition transform active:scale-95 flex justify-center items-center gap-2"
                                 :class="getButtonColor(order.status)">
                             <span x-text="getButtonText(order.status)"></span>
                         </button>
@@ -172,12 +195,18 @@
             </template>
         </div>
 
-        <div x-show="filteredActiveOrders.length === 0" class="flex flex-col items-center justify-center py-20 text-gray-400">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-            </svg>
+        <div x-show="filteredActiveOrders.length === 0 && !isLoading" class="flex flex-col items-center justify-center py-20 text-gray-400">
+            <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                </svg>
+            </div>
             <p class="text-sm font-medium">Tidak ada pesanan di kategori ini</p>
             <button @click="fetchOrders()" class="mt-4 text-primary text-xs font-bold hover:underline">Refresh Data</button>
+        </div>
+
+        <div x-show="isLoading && orders.length === 0" class="flex justify-center py-20">
+            <div class="loader"></div>
         </div>
 
       </main>
@@ -186,15 +215,21 @@
     <script>
       function pizzaApp() {
         return {
+          // ================================================================
+          // PENTING: GANTI URL DI BAWAH INI DENGAN URL RAILWAY TEMANMU
+          // Contoh: "https://pizzadelivery-production.up.railway.app"
+          // ================================================================
+          baseUrl: "https://GANTI_DENGAN_URL_RAILWAY_TEMAN_ANDA.app", 
+
           currentOrderFilter: "all",
           isLoading: false,
           loginError: false,
-          errorMessage: "Login Gagal. Periksa data Anda.",
+          errorMessage: "",
           
-          inputUsername: "", // PERBAIKAN 2: Variable disesuaikan jadi Username
+          inputUsername: "",
           inputPassword: "",
           
-          staff: { id: "", name: "", loggedIn: false },
+          staff: { id: "", name: "", outlet: "", loggedIn: false },
           orders: [],
 
           initData() {
@@ -202,52 +237,44 @@
             if (savedStaff) {
               this.staff = JSON.parse(savedStaff);
               this.fetchOrders();
-              setInterval(() => { if(this.staff.loggedIn) this.fetchOrders() }, 30000);
+              setInterval(() => { if(this.staff.loggedIn) this.fetchOrders() }, 30000); // Auto refresh 30 detik
             }
           },
 
-          // 1. LOGIN (Hit ke API Backend)
+          // 1. FUNGSI LOGIN
           async login() {
             this.isLoading = true;
             this.loginError = false;
-            
-            // PERBAIKAN 3: Payload JSON mengirim 'username'
-            const payload = {
-                username: this.inputUsername, 
-                password: this.inputPassword
-            };
+            this.errorMessage = "";
 
-            console.log("Mencoba Login dengan:", payload); // Debugging: Cek Console Browser (F12)
+            const payload = { username: this.inputUsername, password: this.inputPassword };
 
             try {
-              // URL Backend Login (Pastikan Controller backend mengarah ke sini)
-              const response = await fetch("/api/auth/login", {
+              // Menembak ke URL Railway
+              const response = await fetch(this.baseUrl + "/api/auth/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload),
               });
 
-              console.log("Response Status:", response.status); // Debugging
-
               if (response.ok) {
                 const userData = await response.json();
-                console.log("Login Sukses:", userData);
-
                 this.staff = {
                     id: userData.id || userData.idStaff,
-                    name: userData.fullName || userData.nama || userData.username, // Fallback nama
+                    name: userData.fullName || userData.nama || userData.username,
+                    outlet: userData.outlet || 'Outlet',
                     loggedIn: true,
                 };
                 localStorage.setItem("staff_session", JSON.stringify(this.staff));
                 this.fetchOrders();
               } else {
                 this.loginError = true;
-                this.errorMessage = "Login Gagal. Status: " + response.status;
+                this.errorMessage = response.status === 404 ? "API Tidak Ditemukan (404)" : "Username / Password Salah";
               }
             } catch (error) {
               console.error("Login Error:", error);
               this.loginError = true;
-              this.errorMessage = "Gagal terhubung ke Server.";
+              this.errorMessage = "Gagal Konek ke Server. Cek URL Railway!";
             } finally {
                 this.isLoading = false;
             }
@@ -264,50 +291,47 @@
           // 2. AMBIL DATA PESANAN
           async fetchOrders() {
             if (!this.staff.loggedIn) return;
-            // this.isLoading = true; // Optional: Jangan loading full screen saat refresh background
             try {
-              const response = await fetch("/api/orders/staff/pending"); 
+              const response = await fetch(this.baseUrl + "/api/orders/staff/pending"); 
               if(response.ok) {
                   const data = await response.json();
-                  console.log("Data Pesanan:", data); // Debugging
-                  
                   this.orders = data.map((o) => ({
                     id: o.id || o.idPesanan,
                     customer: o.customerName || o.namaPelanggan || 'Pelanggan',
-                    total: o.totalAmount || o.totalHarga,
+                    total: o.totalAmount || o.totalHarga || 0,
                     status: o.status || 'PENDING',
                     paymentType: o.paymentMethod || 'TUNAI',
+                    date: o.createdAt || new Date().toISOString(),
                     items: o.items || [] 
                   }));
               }
             } catch (error) {
               console.error("Fetch Error:", error);
-            } finally {
-                this.isLoading = false;
             }
           },
 
-          // 3. UPDATE STATUS
+          // 3. UPDATE STATUS (PUT ke API)
           async updateStatusApi(order, newStatus) {
             if (!newStatus) return;
             
             const oldStatus = order.status;
-            order.status = newStatus; // Optimistic Update
+            order.status = newStatus; // Optimistic update
 
             try {
-              const url = `/api/orders/${order.id}/status/staff?status=${newStatus}`;
+              const url = `${this.baseUrl}/api/orders/${order.id}/status/staff?status=${newStatus}`;
               const response = await fetch(url, { method: "PUT" });
 
               if (!response.ok) throw new Error("Gagal update");
               
+              // Refresh data setelah sukses
               setTimeout(() => this.fetchOrders(), 500);
             } catch (error) {
-              alert("Gagal mengupdate status.");
-              order.status = oldStatus;
+              alert("Gagal update status. Cek koneksi.");
+              order.status = oldStatus; // Rollback
             }
           },
 
-          // --- HELPER FUNCTIONS ---
+          // --- HELPER UI ---
           setOrderFilter(filter) { this.currentOrderFilter = filter; },
 
           get filteredActiveOrders() {
@@ -316,56 +340,43 @@
           },
 
           getNextStatus(currentStatus) {
-              const map = {
-                  'PENDING': 'DIPROSES',
-                  'DIPROSES': 'SIAP_DIANTAR',
-                  'SIAP_DIANTAR': 'COMPLETED'
-              };
+              const map = { 'PENDING': 'DIPROSES', 'DIPROSES': 'SIAP_DIANTAR', 'SIAP_DIANTAR': 'COMPLETED' };
               return map[currentStatus];
           },
 
           getBadgeClass(status) {
-            const classes = {
-              PENDING: "bg-orange-100 text-orange-700",
-              DIPROSES: "bg-blue-100 text-blue-700",
-              SIAP_DIANTAR: "bg-green-100 text-green-700",
-            };
-            return classes[status] || "bg-gray-100 text-gray-600";
+            const map = { 'PENDING': 'bg-orange-100 text-orange-700', 'DIPROSES': 'bg-blue-100 text-blue-700', 'SIAP_DIANTAR': 'bg-green-100 text-green-700' };
+            return map[status] || "bg-gray-100 text-gray-600";
+          },
+          
+          getBorderColor(status) {
+            const map = { 'PENDING': 'bg-orange-500', 'DIPROSES': 'bg-blue-500', 'SIAP_DIANTAR': 'bg-green-500' };
+            return map[status] || "bg-gray-300";
           },
 
           getButtonColor(status) {
-            const colors = {
-              PENDING: "bg-primary hover:bg-orange-700",
-              DIPROSES: "bg-blue-600 hover:bg-blue-700",
-              SIAP_DIANTAR: "bg-green-600 hover:bg-green-700",
-            };
-            return colors[status] || "hidden";
+            const map = { 'PENDING': 'bg-primary hover:bg-orange-700', 'DIPROSES': 'bg-blue-600 hover:bg-blue-700', 'SIAP_DIANTAR': 'bg-green-600 hover:bg-green-700' };
+            return map[status] || "hidden";
           },
 
           getButtonText(status) {
-            const texts = {
-              PENDING: "TERIMA PESANAN",
-              DIPROSES: "PESANAN SIAP",
-              SIAP_DIANTAR: "SERAHKAN DRIVER",
-            };
-            return texts[status] || "";
+            const map = { 'PENDING': 'TERIMA PESANAN', 'DIPROSES': 'SELESAI MASAK', 'SIAP_DIANTAR': 'SERAHKAN DRIVER' };
+            return map[status] || "";
           },
 
           getStatusLabel(status) {
-            const labels = {
-              PENDING: "Menunggu",
-              DIPROSES: "Dimasak",
-              SIAP_DIANTAR: "Siap Saji",
-            };
-            return labels[status] || status;
+            const map = { 'PENDING': 'Menunggu Konfirmasi', 'DIPROSES': 'Sedang Dimasak', 'SIAP_DIANTAR': 'Siap Diantar' };
+            return map[status] || status;
           },
 
-          formatRupiah(number) {
-            return new Intl.NumberFormat("id-ID", {
-              style: "currency",
-              currency: "IDR",
-              minimumFractionDigits: 0,
-            }).format(number);
+          formatRupiah(num) {
+            return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits:0 }).format(num);
+          },
+          
+          formatTime(dateString) {
+              if(!dateString) return '';
+              const date = new Date(dateString);
+              return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
           },
           
           getPizzaImage(menuName) {
@@ -374,10 +385,12 @@
               if(name.includes('pepperoni')) return 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=200';
               if(name.includes('veggie')) return 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=200';
               if(name.includes('hawaiian')) return 'https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=200';
-              return 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200';
+              if(name.includes('cheese')) return 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200';
+              if(name.includes('coke') || name.includes('cola')) return 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=200';
+              return 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=200';
           }
         };
       }
     </script>
-  </body>
+</body>
 </html>
